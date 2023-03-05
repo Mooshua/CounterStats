@@ -1,0 +1,152 @@
+"Games"
+{
+    "csgo"
+    {
+        "Offsets"
+        {
+
+            //  Struct.
+            //  In Initialize::WeaponStatId:
+            //
+            //  let base;
+            //  sub_bef940(base + Name, "weapon_deagle")
+            //  base + Kills = 0x14
+            //  base + Shots = 0x40
+            //  base + Hits = 0x68
+            //  base + Damage = 0x90
+            //  sub_bef940(base + Sizeof, "weapon_gloc")
+
+            "WeaponStatId::Name"    
+            {
+                "windows"   "0"
+                "linux"     "0"
+            }
+            //  Name is a 4-byte value.
+            //  The constructor for CSWeaponID fills in some other values, but I don't know what they do quite yet.
+            //  So there's a 8-byte gap here.
+            "WeaponStatId::Kills"   
+            {
+                "windows"   "12"
+                "linux"     "12"
+            }
+            "WeaponStatId::Shots"   
+            {
+                "windows"   "16"
+                "linux"     "16"
+            }
+            "WeaponStatId::Hits"    
+            {
+                "windows"   "20"
+                "linux"     "20"
+            }
+            "WeaponStatId::Damage"  
+            {
+                "windows"   "24"
+                "linux"     "24"
+            }
+            "WeaponStatId::Sizeof"  
+            {
+                "windows"   "28"
+                "linux"     "28"
+            }
+
+            //  Array size.
+            //  Essentially, all stats are kept in a big array.
+            //  one array for current round, one for match, etc.
+            //  This is the size of that array.
+
+            //  Can be found pretty easily once you've got CCSGameStats::IncrementStat
+            //  (Which can be found by xref'ing Global::CGameStats)
+            //  lea     ebx, [eax+ebx*4]
+            //  add     dword [eax+edx*4+0x4d0], ecx <-- 0x4D0 right here
+
+            "PlayerStats::Sizeof"
+            {
+                "windows"   "1232"
+                "linux"     "1232"
+            }
+        }
+        "Keys"
+        {
+            //  The last weaponstatid in the table,
+            //  Indicating we should not go farther than this.
+            "WeaponStatId::Final"   "__none__"
+        }
+        "Addresses"
+        {
+            "Global::WeaponStatId"
+            {
+                //  The start of the global table that this initializer is filling.
+                "signature"     "Initialize::WeaponStatId"
+                //  We're looking for this const:
+                //  Linux:
+                //  push    data_1295aa6 {var_18}  {"weapon_deagle"}
+                //  push    data_1850740 {var_1c}  <-- THIS BAD BOY RIGHT HERE
+                //  call    sub_bef940
+
+                //  Windows:
+                //  Since we can't reliably get base, we'll instead abuse an iterator and subtract 4:
+                //  mov     edi, data_10a55f2c     <-- RIGHT HERE OFFICER
+                "linux"
+                {
+                    "read"      "13"
+                }
+                "windows"
+                {
+                    "read"      "198"
+                    "offset"    "-4"
+                }
+            }
+            "Global::CGameStats"
+            {
+                "signature"     "Find::CGameStats"
+                "linux"
+                {
+                    "read"      "12"
+                }
+                "windows"
+                {
+                    "read"      "35"
+                }
+            }
+        }
+        "Signatures"
+        {
+            "Initialize::WeaponStatId"
+            {
+                //  Pretty obvious. "__none__"
+                //  Initializes a global table with a ton of junk.
+
+                //  sub_bef940(&data_1850740, "weapon_deagle")
+                //  data_185074c = 0x14
+                //  data_1850750 = 0x40
+                //  data_1850754 = 0x68
+                //  data_1850758 = 0x90
+
+                //  On windows, the sig isn't unique for this method.
+                //  So instead we'll look for the second entry and subtract sizeof in base.
+
+                "library"       "server"
+                "linux"         "\x55\x89\xE5\x57\x83\xEC\x0C\x68\x2A\x2A\x2A\x2A\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A"
+                "windows"       "\x55\x8B\xEC\x83\xEC\x08\xA1\x2A\x2A\x2A\x2A\x57"
+            }
+            "Find::CGameStats"
+            {
+                //  Used to find CGameStats constant.
+                //  Sigs aren't actually important
+                //  Look for first arg of CGameStats::GetPlayerStats
+                "library"       "server"
+                "windows"       "\x55\x8B\xEC\x8B\x45\x0C\x56\x8B\x75\x08\x39\x86\x14\x03\x00\x00"
+                "linux"         "\x55\x89\xE5\x53\x83\xEC\x2C\x8B\x5D\x08\x53\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x66\x0F\xEF\xC0"
+            }
+            "CGameStats::GetPlayerStats"
+            {
+                //  "#Player_You_Are_Still_Dominating"
+                //  Func call at the top of the block that consumes that function.
+                "library"       "server"
+                "linux"         "\x8B\x40\x24\x85\xC0\x74\x23\x8B\x15\x2A\x2A\x2A\x2A\x2B\x42\x60\x8B\x55\x08\x5D"
+                "windows"       "\x55\x8B\xEC\x8B\x45\x08\x8B\x50\x1C\x85\xD2\x75\x2A\x69\xC2\x7C\x11\x00\x00"
+            }
+        }
+    }
+}

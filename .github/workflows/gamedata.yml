@@ -1,0 +1,49 @@
+name: Gamedata
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: "0 0,8,16 * * *"
+  repository_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    name: Verify Gamedata
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install Lua 5.1
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1.5"
+
+      - name: Setup BuildX
+        uses: docker/setup-buildx-action@v1
+      - name: Setup Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{github.workspace}}/test/cache
+          key: verify-gd-buildx-${{ github.run_number }}
+          restore-keys: |
+            verify-gd-buildx
+      - name: Verify Gamedata
+        shell: pwsh
+        run: cd test && ./test.ps1 -USE_BUILDX:$True -SUPPRESS_BUILD:$True
+      - name: Upload Binaries
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: binaries
+          path: |
+            test/bin
+            !test/bin/.gitkeep
+      - name: Upload Logs
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: gdc-logs
+          path: |
+            test/logs
