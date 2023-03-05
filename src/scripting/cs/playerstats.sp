@@ -10,9 +10,9 @@ Handle SdkCall__GetPlayerStats
 static int Native__PlayerStats__New(Handle plugin, int nargs)
 {
     int player = GetNativeCell(1);
-
+#if DEBUG
     PrintToServer("BASE: %X; PLAYER: %d", Address__CGameStats, player);
-
+#endif
     Address self = SDKCall(SdkCall__GetPlayerStats, Address__CGameStats, player);
     return self;
 }
@@ -28,9 +28,9 @@ static int Native__PlayerStats__getter(int segment)
         return -1;
 
     Address segment_offset = view_as<Address>( Offset__PlayerState__Sizeof * segment );
-    
+#if DEBUG
     PrintToServer("Self: %X, Off: %X, Segment: %X", self, offset, segment_offset);
-
+#endif
     return LoadFromAddress(self + segment_offset + view_as<Address>(offset), NumberType_Int32);
 }
 

@@ -11,15 +11,18 @@ static Action Command_DumpWeapons(int client, int argc)
 		char name[32];
 		enumerator.GetName(name, sizeof(name));
 
-		ReplyToCommand(client, "Name: %s; Kills: %X; Shots: %X; Hits: %X; Damage: %X;", name, enumerator.Kills, enumerator.Shots, enumerator.Hits, enumerator.Damage);
+		ReplyToCommand(client, "[VALUES] Name: %s; Kills: %X; Shots: %X; Hits: %X; Damage: %X;", name, enumerator.Kills, enumerator.Shots, enumerator.Hits, enumerator.Damage);
+        ReplyToCommand(client, "[VALID?] Name: %s; Kills: %b; Shots: %b; Hits: %b; Damage: %b;", name, enumerator.Kills.IsValid(), enumerator.Shots.IsValid(), enumerator.Hits.IsValid(), enumerator.Damage.IsValid());
+
 	} while (WeaponStatsEnumerator.Next(enumerator));
 
 	{
 		char name[32];
 		enumerator.GetName(name, sizeof(name));
 
-		ReplyToCommand(client, "Name: %s; Kills: %X; Shots: %X; Hits: %X; Damage: %X;", name, enumerator.Kills, enumerator.Shots, enumerator.Hits, enumerator.Damage);
-	}
+		ReplyToCommand(client, "[LAST VALUES] Name: %s; Kills: %X; Shots: %X; Hits: %X; Damage: %X;", name, enumerator.Kills, enumerator.Shots, enumerator.Hits, enumerator.Damage);
+        ReplyToCommand(client, "[LAST VALID?] Name: %s; Kills: %b; Shots: %b; Hits: %b; Damage: %b;", name, enumerator.Kills.IsValid(), enumerator.Shots.IsValid(), enumerator.Hits.IsValid(), enumerator.Damage.IsValid());
+    }
 
     return Plugin_Handled;
 }

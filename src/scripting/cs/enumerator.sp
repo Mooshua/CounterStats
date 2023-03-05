@@ -24,10 +24,10 @@ int		   Offset__Damage;
 /// Constructs a new WeaponStatsEnumerator
 static any Native__WeaponStatsEnumerator__New(Handle plugin, int nparams)
 {
-	PrintToServer("BASE: %X", Address__Base
-);
-	return view_as<Address>( Address__Base
- );
+#if DEBUG
+	PrintToServer("BASE: %X", Address__Base);
+#endif
+	return view_as<Address>( Address__Base);
 }
 
 /// Moves to the next value

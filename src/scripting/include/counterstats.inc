@@ -83,6 +83,7 @@ methodmap StatType
 {
     /// Returns true if this is a valid weaponstat.
     /// Some weapons do not have specific stats (eg, "hits" for grenades)
+    /// And will use a specific placeholder value instead.
     /// This will return false if that is the case.
-    public native bool Valid();
+    public native bool IsValid();
 };

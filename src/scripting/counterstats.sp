@@ -1,9 +1,12 @@
 #include <sourcemod>
 #include <counterstats>
 
+#define DEBUG 0
+
 //  Include CounterStats dependencies
 #include "cs/enumerator.sp"
 #include "cs/playerstats.sp"
+#include "cs/stattype.sp"
 #include "cs/test.sp"
 
 public Plugin myinfo =
@@ -41,6 +44,9 @@ public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
 		return APLRes_Failure;
 
 	if (!Initialize__PlayerStats(Config, error, err_max))
+		return APLRes_Failure;
+
+	if (!Initialize__StatType(Config, error, err_max))
 		return APLRes_Failure;
 
 	return APLRes_Success;
