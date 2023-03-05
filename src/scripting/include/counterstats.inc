@@ -42,18 +42,21 @@ methodmap WeaponStatsEnumerator __nullable__
     }
 
     /// Gets a weaponstat for the amount of times this weapon was fired
+    /// Note: Currently invalid on non-decoy grenades and knives.
     property StatType Shots 
     {
         public native get();
     } 
 
     /// Gets a weaponstat for the amount of shots that hit
+    /// Note: Currently invalid on non-decoy grenades and knives.
     property StatType Hits 
     {
         public native get();
     } 
 
     /// Gets a weaponstat for the amount of damage done by this weapon
+    /// Note: Currently invalid on non-decoy grenades and knives.
     property StatType Damage 
     {
         public native get();
