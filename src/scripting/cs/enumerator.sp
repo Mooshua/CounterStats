@@ -1,24 +1,23 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include "util.sp"
 
 //  The size of buffers to use for weaponids
 #define WEAPONID_BUFFER 32
 #define OFFSET_BAD		-1
 
 //  The name of the final weapon entry
-char	   KV__Final[WEAPONID_BUFFER];
+static char	   KV__Final[WEAPONID_BUFFER];
 
 //  Size of each weapon entry
-int		   Offset__Sizeof;
-int		   Address__Base;
+static int		   Offset__Sizeof;
+static int		   Address__Base;
 
-int		   Offset__Name;
-int		   Offset__Kills;
-int		   Offset__Shots;
-int		   Offset__Hits;
-int		   Offset__Damage;
+static int		   Offset__Name;
+static int		   Offset__Kills;
+static int		   Offset__Shots;
+static int		   Offset__Hits;
+static int		   Offset__Damage;
 
 
 /// Constructs a new WeaponStatsEnumerator

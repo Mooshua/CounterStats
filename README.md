@@ -26,7 +26,8 @@ This plugin exposes an API that allows you to fetch these statistics and use the
 - [x] Player Stats Lookup
 - [x] Weapon Stats Enumeration (deagle shots missed)
 - [ ] Generic Stats Enumeration (props broken)
-- [ ] Fun Fact Evaluation/Enumeration (number of bomb carriers that round)
+- [x] Fun Fact Evaluation/Enumeration (number of bomb carriers that round)
+- [ ] Custom Fun Facts
 - [ ] Player-To-Player stats (how many times x killed y...)
 - [ ] Language Integrated Query
 
@@ -58,6 +59,12 @@ Include `counterstats.inc`, which contains all public native APIs.
 Internally, each "statistic" is stored in a giant array. A `StatType` is a methodmap
 wrapping an index into that array. `PlayerStats` allows you to easily access this array,
 and the various enumerator APIs will help you find the `StatType` that you want.
+
+> **Warning**:
+> 
+> When using fun facts, all objects returned from `FunFactEnumerator.Current()` and `FunFact.Evaluate()` **leak memory**. It is your responsibility to free these objects when they are no longer needed, to avoid use-after-free bugs.
+>
+> If you do not want to free the objects, please ensure that you create as little as possible to avoid running out of memory. Every call produces a new object.
 
 ### Enumerating weapon stats
 

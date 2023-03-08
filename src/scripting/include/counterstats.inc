@@ -1,8 +1,35 @@
 
 enum StatStatus
 {
-    /// If the weaponstat returned from WeaponStatsEnumerator
+    /// If the weaponstat returned from WeaponStatsEnumerator is invalid,
+    /// it will equal this.
     StatStatus_Invalid = 0xFFFFFFFF
+};
+
+/// See https://github.com/saul/demofile/issues/38 for a list of values.
+/// Thanks, saul!
+/// The reason why the round ended, provided to the fun fact manager to decide valid fun facts.
+enum RoundEnd
+{
+    TargetBombed = 1, // Target Successfully Bombed!
+    // 2/3 not in use in CSGO
+    TerroristsEscaped = 4, // The terrorists have escaped!
+    CTStoppedEscape = 5, // The CTs have prevented most of the terrorists from escaping!
+    TerroristsStopped = 6, // Escaping terrorists have all been neutralized!
+    BombDefused = 7, // The bomb has been defused!
+    CTWin = 8, // Counter-Terrorists Win!
+    TerroristWin = 9, // Terrorists Win!
+    Draw = 10, // Round Draw!
+    HostagesRescued = 11, // All Hostages have been rescued!
+    TargetSaved = 12, // Target has been saved!
+    HostagesNotRescued = 13, // Hostages have not been rescued!
+    TerroristsNotEscaped = 14, // Terrorists have not escaped!
+    GameStart = 16, // Game Commencing!
+    // 15 not in use in CSGO
+    TerroristsSurrender = 17, // Terrorists Surrender
+    CTSurrender = 18, // CTs Surrender
+    TerroristsPlanted = 19, // Terrorists Planted the bomb
+    CTsReachedHostage = 20, // CTs Reached the hostage
 };
 
 methodmap WeaponStatsEnumerator __nullable__
@@ -90,3 +117,96 @@ methodmap StatType
     /// This will return false if that is the case.
     public native bool IsValid();
 };
+
+methodmap FunFactEnumerator __nullable__
+{
+    /// Create a new fun fact enumerator and set it to the current entry
+    public native FunFactEnumerator();
+
+    /// Move the enumerator to the next value.
+    /// Returns false if we have reached the end of the list, or if another error occured.
+    public static native bool Next(FunFactEnumerator &self);
+
+    /// Search for the desired fun fact and return true if found.
+    public static bool Seek(FunFactEnumerator &self, const char[] funfact)
+    {
+        do
+        {
+            FunFact current = self.Current();
+            char name[32];
+
+            current.GetName(name, sizeof(name));
+
+            if (StrEqual(name, funfact))
+                return true;
+        } while (FunFactEnumerator.Next(self));
+
+        //  index not found.
+        return false;
+    }
+
+    /// Gets the current fun fact
+    /// This uses an sdkcall--avoid calling this function unnecessarily.
+    /// !! Unstable--this is very likely to change in March/April 2023.
+    public native FunFact Current();
+}
+
+/// A FunFact is a struct that contains information about a fun fact
+/// and a method to generate a fun fact of the specified type.
+methodmap FunFact
+{
+    /// Get the localization string of this fun fact
+    /// Can be used to reliably get the same funfact.
+    public native int GetName(char[] buffer, int maxlen);
+
+    /// Evaluate this fun fact assuming the round ended with "reason".
+    /// Returns true if a fun fact was generated, false if none or error.
+    public native bool Evaluate(RoundEnd reason, FunFactResult &result);
+
+    /// Exact purpose unknown. Assumed to be a unique ID.
+    property int Id 
+    {
+        public native get();
+    } 
+
+    /// Get how rare/cool/whatever this fun fact is.
+    /// Expressed as a float from 0 to 1.
+    property float Prestige 
+    {
+        public native get();
+    }  
+}
+
+methodmap FunFactResult
+{
+    /// Gets the data values for this fun fact.
+    /// Note that there are THREE data values.
+    /// So you had better be passing an INT array with THREE slots in it.
+    /// ONE TWO THREE. THREE. Do not make maxlen save your dumb butt.
+    /// Return 0 on success, otherwise error code on failure.
+    public native int GetData(int[] data, int maxlen);
+
+    /// Get the localization string of this fun fact
+    /// Can be used to reliably get the same funfact.
+    public native int GetName(char[] buffer, int maxlen);
+
+    /// Get the subject of this fun fact.
+    /// EG, for the bomb planter, returns the player that planted the bomb.
+    property int Player 
+    {
+        public native get();
+    }
+
+    /// Exact purpose unknown. Assumed to be a unique ID.
+    property int Id 
+    {
+        public native get();
+    }
+
+    /// Exact purpose unknown. 
+    /// Assumed to be how cool this fun fact is.
+    property float Magnitude 
+    {
+        public native get();
+    }
+}

@@ -27,6 +27,62 @@ static Action Command_DumpWeapons(int client, int argc)
     return Plugin_Handled;
 }
 
+static Action Command_DumpFunFacts(int client, int argc)
+{
+    FunFactEnumerator enumerator = new FunFactEnumerator();
+    do
+	{
+        FunFact current = enumerator.Current();
+
+		char name[32];
+		current.GetName(name, sizeof(name));
+
+		ReplyToCommand(client, "[FUNFACT] Name: %s; Id: %d; Prestige: %f", name, current.Id, current.Prestige);
+
+	} while (FunFactEnumerator.Next(enumerator));
+}
+
+static Action Command_DebugFunFact(int client, int argc)
+{
+    if (argc != 1)
+    {
+        ReplyToCommand(client, "[CS] Usage: cs_debug_funfact <funfact_name>");
+        return Plugin_Handled;
+    }
+
+    char funfact[128];
+    GetCmdArg(1, funfact, sizeof(funfact));
+
+	FunFactEnumerator enumerator = new FunFactEnumerator();
+	if (FunFactEnumerator.Seek(enumerator, funfact))
+	{
+        char name[128];
+
+		FunFact current = enumerator.Current();
+        current.GetName(name, sizeof(name));
+        ReplyToCommand(client, "[CS] FunFact %d; Prestige: %f; Name: %s", current.Id, current.Prestige, name);
+
+        //  Now evaluate it
+        FunFactResult result;
+        if (current.Evaluate(CTWin, result))
+        {
+            ReplyToCommand(client, "[CS] Evaluated! Id %d; Subject %d; Magnitude: %f", result.Id, result.Player, result.Magnitude);
+            int data[3];
+            result.GetData(data, sizeof(data));
+            ReplyToCommand(client, "[CS] Data: %d %d %d", data[0], data[1], data[2]);
+
+            return Plugin_Handled;
+        }
+
+	    ReplyToCommand(client, "[CS] Unable to evaluate '%s' for CTWin.", name);
+        return Plugin_Handled;
+	}
+
+	ReplyToCommand(client, "[CS] Unable to find '%s'. Example: #funfact_knife_kills", funfact);
+
+	return Plugin_Handled;
+} 
+
 static Action Command_AllForWeapon(int client, int argc)
 {
     if (argc != 1)
@@ -71,8 +127,10 @@ static Action Command_AllForWeapon(int client, int argc)
 
 bool Commands__Test()
 {
+    RegAdminCmd("cs_debug_funfact", Command_DebugFunFact, ADMFLAG_RCON, "CounterStats Test Suite: Test funfact stats", COMMAND_GROUP);
     RegAdminCmd("cs_debug_weapon", Command_AllForWeapon, ADMFLAG_RCON, "CounterStats Test Suite: Test local client weapon stats", COMMAND_GROUP);
     RegAdminCmd("cs_enumerate_weapons", Command_DumpWeapons, ADMFLAG_RCON, "CounterStats Test Suite: List all available weapons", COMMAND_GROUP);
+    RegAdminCmd("cs_enumerate_funfact", Command_DumpFunFacts, ADMFLAG_RCON, "CounterStats Test Suite: List all available funfacts", COMMAND_GROUP);
 
 
     return true;

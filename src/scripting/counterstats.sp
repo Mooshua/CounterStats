@@ -3,8 +3,12 @@
 
 #define DEBUG 0
 
+//	Util always comes first!
+#include "cs/util.sp"
+
 //  Include CounterStats dependencies
 #include "cs/enumerator.sp"
+#include "cs/funfact.sp"
 #include "cs/playerstats.sp"
 #include "cs/stattype.sp"
 #include "cs/test.sp"
@@ -31,6 +35,9 @@ public OnPluginStart()
 	//	Setup commands
 	if (!Commands__Test())
 		SetFailState("Failed setting up test suite");
+
+	if (!Setup__FunFact())
+		SetFailState("Failed setting up fun facts");
 }
 
 public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
@@ -47,6 +54,9 @@ public APLRes AskPluginLoad2(Handle self, bool late, char[] error, int err_max)
 		return APLRes_Failure;
 
 	if (!Initialize__StatType(Config, error, err_max))
+		return APLRes_Failure;
+
+	if (!Initialize__FunFact(Config, error, err_max))
 		return APLRes_Failure;
 
 	return APLRes_Success;
