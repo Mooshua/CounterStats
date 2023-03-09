@@ -7,6 +7,7 @@
 #include "cs/util.sp"
 
 //  Include CounterStats dependencies
+#include "cs/benchmark.sp"
 #include "cs/enumerator.sp"
 #include "cs/funfact.sp"
 #include "cs/playerstats.sp"
@@ -35,6 +36,9 @@ public OnPluginStart()
 	//	Setup commands
 	if (!Commands__Test())
 		SetFailState("Failed setting up test suite");
+
+	if (!Commands__Benchmark())
+		SetFailState("Failed setting up benchmarks");
 
 	if (!Setup__FunFact())
 		SetFailState("Failed setting up fun facts");

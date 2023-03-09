@@ -211,6 +211,26 @@ static int Native__FunFactResult__get_Magnitude(Handle plugin, int nparams)
 	return Native__getter(Offset__Result_Magnitude);
 }
 
+/// Clear the SDK Cache. Used for profiling.
+void ClearSdkCache__FunFact()
+{
+	StringMapSnapshot snapshot = Map__SdkCache.Snapshot();
+
+	for(int i = 0; i < snapshot.Length; i++)
+	{
+		char key[ADDRESS_BUFFER]
+		snapshot.GetKey(i, key, sizeof(key));
+
+		Handle value;
+		if (Map__SdkCache.GetValue(key, value))
+		{
+			CloseHandle(value);
+		}
+	}
+
+	Map__SdkCache.Clear();
+}
+
 bool Initialize__FunFact(GameData config, char[] err, int err_max)
 {
     //  ctor
