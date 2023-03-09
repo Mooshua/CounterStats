@@ -193,6 +193,8 @@ PlayerStats player = new PlayerStats(player_index);
 int kill_count = player.GetMatch(enumerator.Kills);
 ```
 
+## PlayerStats
+
 ### Looking up player statistics
 
 Using the methodmap `PlayerStats`, you can lookup stats for a specific player:

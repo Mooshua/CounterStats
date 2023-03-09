@@ -274,7 +274,7 @@
                 //  "#Player_You_Are_Still_Dominating"
                 //  Func call at the top of the block that consumes that function.
                 "library"       "server"
-                "linux"         "\x8B\x40\x24\x85\xC0\x74\x23\x8B\x15\x2A\x2A\x2A\x2A\x2B\x42\x60\x8B\x55\x08\x5D"
+                "linux"         "\x55\x89\xE5\x8B\x45\x0C\x8B\x40\x24"
                 "windows"       "\x55\x8B\xEC\x8B\x45\x08\x8B\x50\x1C\x85\xD2\x75\x2A\x69\xC2\x7C\x11\x00\x00"
             }
             "Find::CFunFactList"
